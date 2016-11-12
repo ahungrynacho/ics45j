@@ -4,10 +4,10 @@
 public class ElevatorEvent {
 
 	private int destination; // floor elevator needs to move to
-	private long expectedArrival; // expected simulated time that the elevator will spend on that floor (including loading+unloading people)
+	private int expectedArrival; // expected simulated time that the elevator will spend on that floor (including loading+unloading people)
 
 	
-	public ElevatorEvent(int dest, long expArr) {
+	public ElevatorEvent(int dest, int expArr) {
 		this.destination = dest;
 		this.expectedArrival = expArr;
 	}
@@ -17,7 +17,7 @@ public class ElevatorEvent {
 	}
 	
 	// Get expected time spent on floor including loading and unloading people
-	public long getExpectedArrival() {
+	public int getExpectedArrival() {
 		return expectedArrival;
 	}
 	

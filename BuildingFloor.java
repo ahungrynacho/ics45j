@@ -18,32 +18,18 @@ public class BuildingFloor {
 		approachingElevator = -1;
 	}
 	
-	// Get total number of requests to this floor
-	public int passengersOnThisFloor() {
-		int sum = 0;
-		for (int i = 0; i < 5; i++) {
-			sum += this.passengerRequests[i];
-		}
-		return sum;
-	}
-	
-	public void resetPassengersOnThisFloor() {
-		for (int i = 0; i < 5; i++) {
-			passengerRequests[i] = 0;
-		}
-	}
-	public int[] getTotalDestinationRequests() {
-		return totalDestinationRequests;
+	public int getTotalDestinationRequests(int dest) {
+		return this.totalDestinationRequests[dest];
 	}
 	
 	// Get number of passengers that have arrived from an elevator to this floor
-	public int[] getArrivedPassengers() {
-		return arrivedPassengers;
+	public int getArrivedPassengers(int src) {
+		return this.arrivedPassengers[src];
 	}
 	
 	// Get number of passenger that want to travel to the ith floor
-	public int[] getPassengerRequests() {
-		return passengerRequests;
+	public int getPassengerRequests(int dest) {
+		return this.passengerRequests[dest];
 	}
 	
 	// Get elevator ID of elevator approaching floor
@@ -52,13 +38,13 @@ public class BuildingFloor {
 	}
 	
 	// Set total number of requests to this floor
-	public void setTotalDestinationRequests(int floor, int req) {
-		this.totalDestinationRequests[floor] += req;
+	public void setTotalDestinationRequests(int floor, int outgoingPassengers) {
+		this.totalDestinationRequests[floor] += outgoingPassengers;
 	}
 	
 	// Set number of passengers that have arrived from an elevator to this floor
-	public void setArrivedPassengers(int floor, int arrivedPassengers) {
-		this.arrivedPassengers[floor] = arrivedPassengers;
+	public void setArrivedPassengers(int floor, int incomingPassengers) {
+		this.arrivedPassengers[floor] += incomingPassengers;
 	}
 	
 	// Set number of passengers from this floor that want to travel to the ith floor

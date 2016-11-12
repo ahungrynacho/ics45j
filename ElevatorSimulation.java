@@ -103,11 +103,10 @@ public class ElevatorSimulation {
 		
 		SimClock.SimClock();
 		for (int i = 0; i < 5; i++){
-			threads[i].start(); // do not put threads to sleep for this lab
+			threads[i].start();
 		}
 		
 		while (SimClock.getTime() < this.totalSimTime) {
-
 			SimClock.tick();
 		}
 		
