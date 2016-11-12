@@ -13,10 +13,23 @@ public class ElevatorSimulation {
 	private int simSecond; // rate of each simulated second
 	private ArrayList<ArrayList<PassengerArrival>> passengers;
 	
+	
 	// Constructor
 	public ElevatorSimulation() {
 		manager = new BuildingManager();
 		passengers = new ArrayList<ArrayList<PassengerArrival>>();
+		// (num_passengers, floor_destination, rate_of_occurrence)
+		// At time = 0, all elevators start at floor 0 and all floors will begin requesting elevators
+		/*	[
+		  	[(2,4,100), (5,2,300)], 
+			[(3,0,500), (1,4,200)],
+			[(5,0,200), (2,1,500), (3,3,600)],
+			[(4,0,200)],
+			[(2,3,600), (6,2,100), (4,0,40)]
+			]
+		*/
+		simSecond = 100; // in milliseconds
+		totalSimTime = 1000 * simSecond;
 	}
 	
 	
@@ -59,6 +72,53 @@ public class ElevatorSimulation {
 				}
 			}
 		}
+	}
+	
+	private void initBuildingManager() {
+		int floor = 0;
+		for (ArrayList<PassengerArrival> sublist : passengers) {
+			BuildingFloor temp = new BuildingFloor();
+			for (PassengerArrival p : sublist) {
+				temp.setPassengerRequests(p.getDestinationFloor(), p.getNumPassengers());
+			}
+			this.manager.setFloor(floor, temp);
+			floor++;
+		}
+	}
+	
+	public void start() {
+		this.initBuildingManager();
+		Elevator[] elevators = new Elevator[5]; 
+		Thread[] threads = new Thread[5];// array of elevator threads
+		
+		for (int i = 0; i < 5; i++) {
+			elevators[i] = new Elevator(i, this.manager);
+		}
+		for (int i = 0; i < 5; i++) {
+			threads[i] = new Thread(elevators[i]);
+		}
+		
+		// 1 millisecond = 10 ^ -3 seconds
+		// 1 nanosecond = 10 ^ -9 seconds
+		
+		SimClock.SimClock();
+		for (int i = 0; i < 5; i++){
+			threads[i].start(); // do not put threads to sleep for this lab
+		}
+		
+		while (SimClock.getTime() < this.totalSimTime) {
+
+			SimClock.tick();
+		}
+		
+		for (int i = 0; i < 5; i++) {
+			elevators[i].terminate();
+		}
+		
+	}
+	
+	public void printBuildingState() {
+		
 	}
 	
 	

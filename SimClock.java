@@ -4,16 +4,16 @@
 public class SimClock {
 	private static int time; // Time
 	
-	// Constructor
-	public SimClock() {
+	public static void SimClock() {
 		time = 0; // initialize time to 0
 	}
 	
-	public static void tick() {
+	public synchronized static void tick() {
 		time++;
 	}
 	
-	public static int getTime() {
+	public synchronized static int getTime() {
 		return time;
 	}
+
 }

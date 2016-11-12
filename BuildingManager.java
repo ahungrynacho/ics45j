@@ -6,16 +6,45 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 public class BuildingManager {
+	// critical section
 	private BuildingFloor[]	floors;
-	private Lock floorsLock; // lock for floors array
+	private Lock[] locks; // lock for floors array
 	
 	public BuildingManager() {
 		floors = new BuildingFloor[5];
-		floorsLock = new ReentrantLock(); // initialize lock
+		locks = new Lock[5];
+		for (int i = 0; i < 5; i++) {
+			locks[i] = new ReentrantLock(); // each floor has their own lock
+		}
 	}
 	
 	// TODO: Any methods needed to manipulate the floors array
 	// Remember to Lock :)
+	
+	public int loadPassengers(int floor) {
+		
+		locks[floor].lock();
+		int passengers = this.floors[floor].passengersOnThisFloor();
+		locks[floor].unlock();
+		return passengers;
+	}
+	
+	public void unloadPassengers(int floor) {
+		
+	}
+	
+	// If one thread is writing, then all other threads must wait.
+	public void approachFloor(int approachingElevator, int floor) {
+		locks[floor].lock();
+		this.floors[floor].setApproachingElevator(approachingElevator);
+		locks[floor].unlock();
+	}
+	
+	public void leaveFloor(int floor) {
+		locks[floor].lock();
+		this.floors[floor].setApproachingElevator(-1);
+		locks[floor].unlock();
+	}
 	
 	// Get floors array
 	public BuildingFloor[] getFloors() {
@@ -23,7 +52,7 @@ public class BuildingManager {
 	}
 	
 	// Set floors array
-	public void setFloors(BuildingFloor[] floors) {
-		this.floors = floors;
+	public void setFloor(int i, BuildingFloor floor) {
+		this.floors[i] = floor;
 	}
 }
