@@ -49,29 +49,33 @@ public class ElevatorSimulation {
 		return lines;
 	}
 	
-	// Extract Simulation and Floor Information
-	public void extractInformation(ArrayList<String> lines) {
-		for (int i = 0; i < lines.size(); i++) {
-			if (i == 0) { // 1st line is duration of Simulation
-				totalSimTime = Integer.parseInt(lines.get(i));
-			} else if (i == 1) { // 2nd line is each simulated second in real time
-				simSecond = Integer.parseInt(lines.get(i));
-			} else {
-				String[] passengerInfo = lines.get(i).split(";"); // Separate by ";"
-				for (int j = 0; j < passengerInfo.length; j++) {
-					String[] info = passengerInfo[j].split(" "); // Separate by " "
-					// Create PassengerArrival Object; at time=0, timePeriod = expectedArrivalTime
-					PassengerArrival passenger = new PassengerArrival(Integer.parseInt(info[0]), Integer.parseInt(info[1]), 
-													Integer.parseInt(info[2]), Integer.parseInt(info[2]));
-					// Add passenger information to passengers
-					passengers.get(i - 2).add(passenger); // TODO: Feel free to change indexing
-					
-					// Set Floor i - 2(b/c i = 2 here) passenger requests [Floor (2nd #), # of people (1st #)] 
-					// manager.getFloors()[i - 2].setPassengerRequests(Integer.parseInt(info[1]), Integer.parseInt(info[0]));
-					// manager.getFloors()[i - 2].setTotalDestinationRequests(Integer.parseInt(info[1]), Integer.parseInt(info[0]));
-				}
+	public void getFloorPassengers(ArrayList<String> floorPassengers) {
+		// Takes the last five lines of ElevatorConfig.txt
+		for (int i = 0; i < floorPassengers.size(); i++) { // for each line (floor)
+			String[] passengerInfo = floorPassengers.get(i).split(";"); // Split by ";"
+			for (int j = 0; j < passengerInfo.length; j++) {
+				// Separate by " " to get the three pieces of information about the passengers
+				String[] info = passengerInfo[j].split(" ");
+				// Create PassengerArrival Objects for each item in passengerInfo
+				PassengerArrival passenger = new PassengerArrival(Integer.parseInt(info[0]), 
+						Integer.parseInt(info[1]), Integer.parseInt(info[2]), Integer.parseInt(info[2]));
+				
+				// Add PassengerArrival Object to corresponding position in passengers array
+				passengers.get(i).add(passenger);
 			}
 		}
+		
+	}
+	
+	// Extract Simulation and Floor Information
+	public void extractInformation(ArrayList<String> lines) {
+		// 1st line is duration of Simulation
+		totalSimTime = Integer.parseInt(lines.get(0));
+		// 2nd line is each simulated second in real time
+		simSecond = Integer.parseInt(lines.get(1));
+		
+		// Save PassengerArrival Objects for each floor in Config file (line 3 to 7)
+		getFloorPassengers(new ArrayList<String>(lines.subList(2, lines.size() - 1)));
 	}
 	
 	private void initBuildingManager() {
