@@ -13,6 +13,7 @@ public class ElevatorSimulation {
 	private int simSecond; // rate of each simulated second
 	private ArrayList<ArrayList<PassengerArrival>> passengers;
 	
+	
 	// Constructor
 	public ElevatorSimulation() {
 		manager = new BuildingManager();
@@ -37,10 +38,8 @@ public class ElevatorSimulation {
 		ArrayList<String> lines = new ArrayList<String>();
 		try {
 			scanner = new Scanner(new File(file)); // Open file
-			while (scanner.hasNextLine()) {
 					String line = scanner.nextLine(); // Read next line
 					lines.add(line); // add to ArrayList
-			}
 		} catch (FileNotFoundException e) {
 			// Exception: file not found
 		} finally {
@@ -54,17 +53,16 @@ public class ElevatorSimulation {
 		// Takes the last five lines of ElevatorConfig.txt
 		for (int i = 0; i < floorPassengers.size(); i++) { // for each line (floor)
 			String[] passengerInfo = floorPassengers.get(i).split(";"); // Split by ";"
-			ArrayList<PassengerArrival> temp = new ArrayList<PassengerArrival>();
 			for (int j = 0; j < passengerInfo.length; j++) {
 				// Separate by " " to get the three pieces of information about the passengers
 				String[] info = passengerInfo[j].split(" ");
 				// Create PassengerArrival Objects for each item in passengerInfo
 				PassengerArrival passenger = new PassengerArrival(Integer.parseInt(info[0]), 
 						Integer.parseInt(info[1]), Integer.parseInt(info[2]), Integer.parseInt(info[2]));
-				temp.add(passenger);
+				
+				// Add PassengerArrival Object to corresponding position in passengers array
+				passengers.get(i).add(passenger);
 			}
-			// Add PassengerArrival Object to corresponding position in passengers array
-			passengers.add(temp);
 		}
 		
 	}
@@ -77,8 +75,7 @@ public class ElevatorSimulation {
 		simSecond = Integer.parseInt(lines.get(1));
 		
 		// Save PassengerArrival Objects for each floor in Config file (line 3 to 7)
-		ArrayList<String> floorLines = new ArrayList<String>(lines.subList(2, 6));
-		getFloorPassengers(floorLines);
+		getFloorPassengers(new ArrayList<String>(lines.subList(2, lines.size() - 1)));
 	}
 	
 	private void initBuildingManager() {
@@ -94,6 +91,10 @@ public class ElevatorSimulation {
 	}
 	
 	public void start() {
+		// Continuously populate floors with passengers at the rate and quantity specified by
+		// ArrayList<ArrayList<PassengerArrival>> passengers by accessing each floor through this.manager.
+		
+		// Have each thread continuously scan through floors by accessing this.manager.
 		this.initBuildingManager();
 		Elevator[] elevators = new Elevator[5]; 
 		Thread[] threads = new Thread[5];// array of elevator threads
