@@ -3,7 +3,7 @@
 
 public class BuildingFloor {
 	private int[] totalDestinationRequests; // total passengers that want to go to the ith floor
-	private int[] arrivedPassengers; // passengers arrived from ith floor
+	private int[] arrivedPassengers; // passengers arrived from ith elevator to this floor
 	private int[] passengerRequests; // passengers who currently want to go to the ith floor
 	private int	approachingElevator;
 	// If an elevator starting from floor 0 assigned to pickup people on floor 4 is scheduled chronologically

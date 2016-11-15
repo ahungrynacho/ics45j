@@ -74,4 +74,13 @@ public class BuildingManager {
 	public void setFloor(int i, BuildingFloor floor) {
 		this.floors[i] = floor;
 	}
+
+	public int getFLOORS() {
+		return FLOORS;
+	}
+
+	public void setFLOORS(int fLOORS) {
+		FLOORS = fLOORS;
+	}
+	
 }
