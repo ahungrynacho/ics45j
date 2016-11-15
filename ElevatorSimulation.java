@@ -94,6 +94,9 @@ public class ElevatorSimulation {
 	}
 	
 	public void start() {
+		// Continuously populate floors with passengers at the rate and quantity specified by
+		// ArrayList<ArrayList<PassengerArrival>> passengers by accessing each floor through this.manager.		
+		// Have each thread continuously scan through floors by accessing this.manager.
 		this.initBuildingManager();
 		Elevator[] elevators = new Elevator[5]; 
 		Thread[] threads = new Thread[5];// array of elevator threads
@@ -115,6 +118,15 @@ public class ElevatorSimulation {
 		
 		while (SimClock.getTime() < this.totalSimTime) {
 			SimClock.tick();
+			
+			// Each time the clock ticks, print out: SimClock time
+			// Number of passengers entering a specific floor and requesting to go to ith floor
+			// Elevator Actions including
+			// elevator heading to specific floor to pickup passengers
+			// elevator heading to specific floor to unload passengers
+			// elevator reaching a specific floor to pickup passengers (includes number of passengers and destination)
+			// elevator reaching a specific floor to unload passengers (includes number of passengers exiting)
+			System.out.print(SimClock.getTime() * simSecond);
 		}
 		
 		for (int i = 0; i < 5; i++) {
@@ -124,7 +136,12 @@ public class ElevatorSimulation {
 	}
 	
 	public void printBuildingState() {
+		// For each Floor: total number of requests, total number of passengers exit,
+		// current number in elevator, which elevator currently heading towards floor
 		
+		// For each Elevator: total number of passengers that entered throughout simulation,
+		// total number of passengers that exited the elevator on a specific floor,
+		// current passengers heading to any floor
 	}
 	
 	
