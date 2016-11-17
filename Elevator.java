@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 public class Elevator implements Runnable {
 	private int FLOORS = 5;
-	private int simulatedTime = 100; //milliseconds
 	private int loadUnloadTime = 10; // keep in simulated time
 	private int travelTimePerFloor = 5; // keep in simulated time
 	private int elevatorID;
@@ -56,19 +55,6 @@ public class Elevator implements Runnable {
 		return 0;
 	}
 	*/
-	// Generates ElevatorEvents for passengers who are about to enter the elevator from currentElevator.
-	public ArrayList<ElevatorEvent> genElevatorEvents(int currentFloor) {
-		ArrayList<ElevatorEvent> next = new ArrayList<ElevatorEvent>();
-
-		for (int dest = 0; dest < this.manager.getFLOORS(); dest++) {
-			if (this.manager.getFloor(currentFloor).getPassengerRequests(dest) != 0) {
-				next.add(new ElevatorEvent(dest, totalTime(dest)));
-				this.manager.getFloor(currentFloor).setPassengerRequests(dest, 0); // Set the number of passengers of this floor to 0 because they were loaded into the elevator.
-			}
-		}
-		
-		return next;	
-	}
 	
 	public void run() {
 		// All elevators start at floor 0 so check this floor for passengers that want to go up.
@@ -87,7 +73,7 @@ public class Elevator implements Runnable {
 		while (this.running) {
 			// check if moveQueue is empty and lock the BuildingManager to check for requests
 			if (moveQueue.isEmpty()) { // blocks out other elevators so no race condition on floor 0 at start
-				this.moveQueue.addAll(this.manager.findFloor()); // scans floors for passengers waiting on this elevator and populates the moveQueue
+				this.moveQueue.addAll(this.manager.genElevatorEvents()); // scans floors for passengers waiting on this elevator and populates the moveQueue
 			}
 			
 			for (ElevatorEvent e : moveQueue) { // TODO: Figure out when to print what
