@@ -1,12 +1,15 @@
 // Kimberly Chou 80176941
 // Brian Huynh 57641580
 
+import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 
 public class BuildingManager {
 	// critical section
+	private int loadUnloadTime = 10; // keep in simulated time
+	private int travelTimePerFloor = 5; // keep in simulated time
 	private int FLOORS;
 	private BuildingFloor[]	floors;
 	private Lock[] locks; // lock for floors array
@@ -83,28 +86,43 @@ public class BuildingManager {
 		FLOORS = fLOORS;
 	}
 	
-	public synchronized int findFloor() {
+	public synchronized ArrayList<ElevatorEvent> populateFloor() {
 		// Check for request, WAIT if no requests available, Return when request found
-		int floorFound = -1;
+
+		ArrayList<ElevatorEvent> requests = new ArrayList<ElevatorEvent>();
 		do {
 			for (int src = 0; src < getFLOORS(); src++) {
 				for (int dest = 0; dest < getFLOORS(); dest++) {
-					if (getFloor(src).getPassengerRequests(dest) != 0) {
-						floorFound = src;
+					if (getFloor(src).getPassengerRequests(dest) != 0 && dest > src) { // passengers that want to go up
+						ElevatorEvent e = new ElevatorEvent(src, dest);
+						e.setExpectedArrival(travelTimePerFloor, loadUnloadTime);
+						requests.add(e);
+					}
+					else if (requests.isEmpty() && getFloor(src).getPassengerRequests(dest) != 0 && dest < src) { // passengers that want to go down
+						ElevatorEvent e = new ElevatorEvent(src, dest);
+						e.setExpectedArrival(travelTimePerFloor, loadUnloadTime);
+						requests.add(e);					
 					}
 				}
 			}
-			if (floorFound < 0) { // if no floor found, elevator wait
+			if (requests.isEmpty()) { // if no floor found, elevator wait
 				try {
 					wait();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-		} while (floorFound < 0);
+		} while (requests.isEmpty());
 		
 		// if floor found exit while loop and return floor
-		return floorFound;
+		return requests;
+	}
+	
+	public synchronized void populateFloors(int src, int dest, int passengers) {
+		// Populates floors with passengers according to the specified time interval ArrayList<ArrayList<PassengerArrival>> 
+		// in ElevatorSimulation.java	
+		getFloor(src).setPassengerRequests(dest, passengers);
+		notifyAll();
 	}
 	
 	
