@@ -136,13 +136,13 @@ public class ElevatorSimulation {
 					if (SimClock.getTime() == passengers.get(i).get(j).getExpectedTimeOfArrival()) {
 						// if current Time == passenger's next expected arrival time, generate passengers
 						// Elevators that are checking BuildingManager wait if no requests
-						// add passenger requests
-						
-						
-						// Notify Threads that are waiting
-						
-						// Update next expected Time of arrival
-						
+						// add passenger requests; need original floor, destination floor, # of people
+						manager.populateFloors(i, passengers.get(i).get(j).getDestinationFloor(), 
+								passengers.get(i).get(j).getNumPassengers());
+												
+						// Update next expected Time of arrival by adding TimePeriod to Old ExpectedTimeOfArrival
+						passengers.get(i).get(j).setExpectedTimeOfArrival(passengers.get(i).get(j).getTimePeriod() +
+								passengers.get(i).get(j).getExpectedTimeOfArrival());
 						
 					}
 				}

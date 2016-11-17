@@ -87,7 +87,7 @@ public class Elevator implements Runnable {
 		while (this.running) {
 			// check if moveQueue is empty and lock the BuildingManager to check for requests
 			if (moveQueue.isEmpty()) { // blocks out other elevators so no race condition on floor 0 at start
-				this.moveQueue.addAll(genElevatorEvents(this.manager.findFloor())); // scans floors for passengers waiting on this elevator
+				this.moveQueue.addAll(this.manager.findFloor()); // scans floors for passengers waiting on this elevator and populates the moveQueue
 			}
 			
 			for (ElevatorEvent e : moveQueue) { // TODO: Figure out when to print what
