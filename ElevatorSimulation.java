@@ -29,7 +29,7 @@ public class ElevatorSimulation {
 			]
 		*/
 		simSecond = 100; // in milliseconds
-		totalSimTime = 1000 * simSecond;
+		totalSimTime = 1000;
 	}
 	
 	
@@ -96,6 +96,9 @@ public class ElevatorSimulation {
 	}
 	
 	public void start() {
+		// Read ElevatorConfig.txt for Simulation and Passenger Information
+		// extractInformation(readConfigFile("ElevatorConfig.txt"));
+		
 		// Continuously populate floors with passengers at the rate and quantity specified by
 		// ArrayList<ArrayList<PassengerArrival>> passengers by accessing each floor through this.manager.
 		// Have each thread continuously scan through floors by accessing this.manager.
@@ -119,7 +122,33 @@ public class ElevatorSimulation {
 		}
 		
 		while (SimClock.getTime() < this.totalSimTime) {
+			// Sleep to account for real-time
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				;
+			}			
 			SimClock.tick();
+			
+			// TODO: Generate Passenger Events
+			for (int i = 0; i < passengers.size(); i++) { // iterate through outer passengers arraylist
+				for (int j = 0; j < passengers.get(i).size(); j++) { // iterate through inner arraylist
+					if (SimClock.getTime() == passengers.get(i).get(j).getExpectedTimeOfArrival()) {
+						// if current Time == passenger's next expected arrival time, generate passengers
+						// Elevators that are checking BuildingManager wait if no requests
+						// add passenger requests
+						
+						
+						// Notify Threads that are waiting
+						
+						// Update next expected Time of arrival
+						
+						
+					}
+				}
+			}
+			
+			System.out.println(SimClock.getTime());
 			
 			// Each time the clock ticks, print out: SimClock time
 			// Number of passengers entering a specific floor and requesting to go to ith floor
@@ -128,7 +157,6 @@ public class ElevatorSimulation {
 			// elevator heading to specific floor to unload passengers
 			// elevator reaching a specific floor to pickup passengers (includes number of passengers and destination)
 			// elevator reaching a specific floor to unload passengers (includes number of passengers exiting)
-			System.out.print(SimClock.getTime() * simSecond);
 		}
 		
 		for (int i = 0; i < 5; i++) {

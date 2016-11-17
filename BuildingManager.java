@@ -54,7 +54,7 @@ public class BuildingManager {
 	
 	public void unloadPassengers(int currentFloor) {
 		locks[currentFloor].lock();
-		
+		// TODO: fill in unload passengers actions
 		locks[currentFloor].unlock();
 	}
 	
@@ -82,5 +82,30 @@ public class BuildingManager {
 	public void setFLOORS(int fLOORS) {
 		FLOORS = fLOORS;
 	}
+	
+	public synchronized int findFloor() {
+		// Check for request, WAIT if no requests available, Return when request found
+		int floorFound = -1;
+		do {
+			for (int src = 0; src < getFLOORS(); src++) {
+				for (int dest = 0; dest < getFLOORS(); dest++) {
+					if (getFloor(src).getPassengerRequests(dest) != 0) {
+						floorFound = src;
+					}
+				}
+			}
+			if (floorFound < 0) { // if no floor found, elevator wait
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		} while (floorFound < 0);
+		
+		// if floor found exit while loop and return floor
+		return floorFound;
+	}
+	
 	
 }

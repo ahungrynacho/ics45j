@@ -6,8 +6,8 @@ import java.util.ArrayList;
 public class Elevator implements Runnable {
 	private int FLOORS = 5;
 	private int simulatedTime = 100; //milliseconds
-	private int loadUnloadTime = 10 * simulatedTime;
-	private int travelTimePerFloor = 5 * simulatedTime;
+	private int loadUnloadTime = 10; // keep in simulated time
+	private int travelTimePerFloor = 5; // keep in simulated time
 	private int elevatorID;
 	private int currentFloor;
 	private int numPassengers; // current number of passengers in the elevator
@@ -43,7 +43,7 @@ public class Elevator implements Runnable {
 		// which prevents deadlocks since all locks will be unlocked and released afterwards.
 		this.running = false;
 	}
-	
+	/*
 	public int findFloor() {
 		// Return the floor with passengers awaiting for an elevator.
 		for (int src = 0; src < this.manager.getFLOORS(); src++) {
@@ -55,7 +55,7 @@ public class Elevator implements Runnable {
 		}
 		return 0;
 	}
-	
+	*/
 	// Generates ElevatorEvents for passengers who are about to enter the elevator from currentElevator.
 	public ArrayList<ElevatorEvent> genElevatorEvents(int currentFloor) {
 		ArrayList<ElevatorEvent> next = new ArrayList<ElevatorEvent>();
@@ -67,8 +67,7 @@ public class Elevator implements Runnable {
 			}
 		}
 		
-		return next;
-	
+		return next;	
 	}
 	
 	public void run() {
@@ -78,31 +77,33 @@ public class Elevator implements Runnable {
 		// starting at floor 0 is not supposed to be split into multiple elevators.
 		// Throughout the rest of the simulation, however, no two elevators will ever be on the same floor because 
 		// this.manager.setApproachingElevator will mutex floors from other elevators.
-		
+		/*
 		// This prevents the initial race condition from occuring.
 		this.manager.setApproachingElevator(this.elevatorID, this.currentFloor); // initially lock floor 0
 		this.moveQueue.addAll(genElevatorEvents(this.currentFloor));
 		this.manager.setApproachingElevator(-1, this.currentFloor); // unlock floor 0
+		*/
 		
 		while (this.running) {
-			for (ElevatorEvent e : moveQueue) {
+			// check if moveQueue is empty and lock the BuildingManager to check for requests
+			if (moveQueue.isEmpty()) { // blocks out other elevators so no race condition on floor 0 at start
+				this.moveQueue.addAll(genElevatorEvents(this.manager.findFloor())); // scans floors for passengers waiting on this elevator
+			}
+			
+			for (ElevatorEvent e : moveQueue) { // TODO: Figure out when to print what
 				this.manager.setApproachingElevator(this.elevatorID, e.getDestination()); // lock the floor this elevator is approaching
 				this.manager.loadPassengers(this.currentFloor);
-				
-				try {
-					Thread.sleep(e.getExpectedArrival()); // travel time + load/unload delay
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} finally {
-					this.currentFloor = e.getDestination(); // the elevator arrived at its destination
-					this.manager.unloadPassengers(this.currentFloor);
-					moveQueue.remove(e);
+				int destinationTime = SimClock.getTime() + e.getExpectedArrival();
+				// Print statement
+				while (SimClock.getTime() != destinationTime) {
+					// do nothing. Traveling
 				}
+				// Print statement
+				this.currentFloor = e.getDestination(); // the elevator arrived at its destination
+				this.manager.unloadPassengers(this.currentFloor);
+				moveQueue.remove(e);
+
 				this.manager.setApproachingElevator(-1, this.currentFloor); // unlock the current floor for other elevators
-				if (moveQueue.isEmpty())
-					this.moveQueue.addAll(genElevatorEvents(this.findFloor())); // scans floors for passengers waiting on this elevator
-					
 			}
 		}
 	}
